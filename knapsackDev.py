@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import datetime
+import time
 import json
 
-def checkCapacity(contents):
-    """ Contents are expected as a dictionary of the form {item_id:(volume,value), ...} """
+def checkCapacity(contents,knapsack_cap):
+    """ contents is expected as a dictionaryof the form {item_id:(volume,value), ...} """
     """ This function returns True if the knapsack is within capacity; False if the knapsack is overloaded """
     load = 0
     if isinstance(contents,dict):
@@ -37,7 +37,7 @@ def getData():
             x[i]['data'][j] = tuple(myData[j]) 
     return x
 
-def loadKnapsack(items,in_knapsack,knapsack_cap):
+def loadKnapsack(items,knapsack_cap):
     """ You write this function which is your heuristic knapsack algorithm
     
         You may indicate one or more items to put into the backpack within a list data structure
@@ -46,53 +46,70 @@ def loadKnapsack(items,in_knapsack,knapsack_cap):
         If you are finished loading the knapsack, then return any string value  """
         
     """ Compute existing load in knapsack """
-    my_team_number = 9    # always return this variable as the first item
+    myUsername = 'jrbrad' # always return this variable as the first item
     items_to_pack = []    # use this list for the indices of the items you load into the knapsack
     
     load = 0.0            # use this variable to keep track of how much volume is already loaded into the backpack
-    for this_key in in_knapsack:
-        load += in_knapsack[this_key][0]
+    value = 0.0           # value in knapsack
         
-    """
-    Code your algorithm here
-    """
-                
-    return my_team_number, 'finished'                     # use this statement when you have filled the backpack
+    item_keys = [k for k in items.keys()]
+    pack_item = item_keys[0]
+    items_to_pack.append(pack_item)
+    load += items[pack_item][0]
+    value += items[pack_item][1]
+    
+    return myUsername, items_to_pack       # use this return statement when you have items to load in the knapsack
         
 
 """ Main code """
 """ Get data and define problem ids """
 probData = getData()
 problems = range(len(probData))
+silent_mode = False    # use this variable to turn on/off appropriate messaging depending on student or instructor use
+""" Error Messages """
+error_bad_list_key = """ 
+A list was received from load_knapsack() for the item numbers to be loaded into the knapsack.  However, that list contained an element that was not a key in the dictionary of the items that were not yet loaded.   This could be either because the element was non-numeric, it was a key that was already loaded into the knapsack, or it was a numeric value that didn't match with any of the dictionary keys. Please check the list that your load_knapsack function is returning. It will be assumed that the knapsack is fully loaded with any items that may have already been loaded and a score computed accordingly. 
+"""
+error_response_not_list = """
+load_knapsack() returned a response for items to be packed that was not a list.  Scoring will be terminated   """
 
 for problem_id in problems:
     in_knapsack = {}
     knapsack_cap = probData[problem_id]['cap']
     items = probData[problem_id]['data']
-    finished = False
+    errors = False
     response = None
     
-    while finished == False:
-        timeStart = datetime.datetime.now()
-        team_num, response = loadKnapsack(items,in_knapsack,knapsack_cap)
-        timeFinish = datetime.datetime.now()
-        if not isinstance(response,str):
-            for this_key in response:
-                if this_key in items.keys():
-                    in_knapsack[this_key] = items[this_key]
-                    del items[this_key]
+    startTime = time.time()
+    team_num, response = loadKnapsack(items,knapsack_cap)
+    execTime = time.time() - startTime
+    if isinstance(response,list):
+        for this_key in response:
+            if this_key in items.keys():
+                in_knapsack[this_key] = items[this_key]
+                del items[this_key]
+            else:
+                errors = True
+                if silent_mode:
+                    status = "bad_list_key"
                 else:
-                    print()
-                    print("loadKnapsack() returned a response that was neither a key found in the items dictionary, nor")
-                    print("was it a string value which indicating the knapsack loading process was complete.")
-                    print("It will be assumed that the knapsack is fully loaded.")
-                    finished = True
+                    print("P"+str(problem_id)+"bad_key_")
+                #finished = True
+    else:
+        if silent_mode:
+            status = "P"+str(problem_id)+"_not_list_"
         else:
-                print()
-                print("Problem ", str(problem_id), "Knapsack Loaded....")
-                finished = True
+            print(error_response_not_list)
                 
-    knapsack_ok = checkCapacity(in_knapsack)
-    print('Is solution feasible for Problem '+str(problem_id)+'? ',knapsack_ok)
-    print('Knapsack value: ',knapsack_value(in_knapsack))
-    print('Execution time: ',timeFinish-timeStart)
+    if errors == False:
+        if silent_mode:
+            status = "P"+str(problem_id)+"knap_load_"
+        else:
+            print("Knapsack Loaded for Problem ", str(problem_id)," ....", '    Execution time: ', execTime, ' seconds')
+        knapsack_ok = checkCapacity(in_knapsack,knapsack_cap)
+        knapsack_result = knapsack_value(in_knapsack)
+        if silent_mode:
+            print(status+"; knapsack within capacity: "+knapsack_ok)
+        else:
+            print("knapcap: ", knapsack_ok)
+            print("knapsack value : ", knapsack_value(in_knapsack))
