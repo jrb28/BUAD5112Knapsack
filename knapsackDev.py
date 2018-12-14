@@ -47,6 +47,7 @@ def loadKnapsack(items,knapsack_cap):
         
     """ Compute existing load in knapsack """
     myUsername = 'jrbrad' # always return this variable as the first item
+    nickname = '' # This idenfier will appear on the leaderboard, if you desire to be identified.  This may be left as an empty string.
     items_to_pack = []    # use this list for the indices of the items you load into the knapsack
     
     load = 0.0            # use this variable to keep track of how much volume is already loaded into the backpack
@@ -58,7 +59,7 @@ def loadKnapsack(items,knapsack_cap):
     load += items[pack_item][0]
     value += items[pack_item][1]
     
-    return myUsername, items_to_pack       # use this return statement when you have items to load in the knapsack
+    return myUsername, nickname, items_to_pack       # use this return statement when you have items to load in the knapsack
         
 
 """ Main code """
