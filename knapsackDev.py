@@ -82,7 +82,7 @@ for problem_id in problems:
     response = None
     
     startTime = time.time()
-    team_num, response = loadKnapsack(items,knapsack_cap)
+    team_num, nickname, response = loadKnapsack(items,knapsack_cap)
     execTime = time.time() - startTime
     if isinstance(response,list):
         for this_key in response:
