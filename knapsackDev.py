@@ -40,10 +40,8 @@ def getData():
 def loadKnapsack(items,knapsack_cap):
     """ You write this function which is your heuristic knapsack algorithm
     
-        You may indicate one or more items to put into the backpack within a list data structure
-        by returning a list of values corresponding to the dictionary keys for the inserted items
-    
-        If you are finished loading the knapsack, then return any string value  """
+        Indicate items to be included in the backpack by including their dictionary keys within 
+        a list data structure and, subsequently, returning that list of IDs from this function  """
         
     """ Compute existing load in knapsack """
     myUsername = 'jrbrad' # always return this variable as the first item
