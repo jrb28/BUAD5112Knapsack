@@ -64,7 +64,7 @@ def loadKnapsack(items,knapsack_cap):
 """ Get data and define problem ids """
 probData = getData()
 problems = range(len(probData))
-silent_mode = False    # use this variable to turn on/off appropriate messaging depending on student or instructor use
+silent_mode = True    # use this variable to turn on/off appropriate messaging depending on student or instructor use
 """ Error Messages """
 error_bad_list_key = """ 
 A list was received from load_knapsack() for the item numbers to be loaded into the knapsack.  However, that list contained an element that was not a key in the dictionary of the items that were not yet loaded.   This could be either because the element was non-numeric, it was a key that was already loaded into the knapsack, or it was a numeric value that didn't match with any of the dictionary keys. Please check the list that your load_knapsack function is returning. It will be assumed that the knapsack is fully loaded with any items that may have already been loaded and a score computed accordingly. 
@@ -89,26 +89,23 @@ for problem_id in problems:
                 del items[this_key]
             else:
                 errors = True
-                if silent_mode:
-                    status = "bad_list_key"
-                else:
-                    print("P"+str(problem_id)+"bad_key_")
-                #finished = True
+                status = 'Problem ' + str(problem_id) + ' solution references invalid key'
+                if not silent_mode:
+                    print('Problem ' + str(problem_id) + ' solution references invalid key')
+                
     else:
+        errors = True
+        status = 'Problem ' + str(problem_id) + " is not a list"
         if silent_mode:
-            status = "P"+str(problem_id)+"_not_list_"
-        else:
             print(error_response_not_list)
                 
     if errors == False:
-        if silent_mode:
-            status = "P"+str(problem_id)+"knap_load_"
-        else:
-            print("Knapsack Loaded for Problem ", str(problem_id)," ....", '    Execution time: ', execTime, ' seconds')
         knapsack_ok = checkCapacity(in_knapsack,knapsack_cap)
-        knapsack_result = knapsack_value(in_knapsack)
-        if silent_mode:
-            print(status+"; knapsack within capacity: "+knapsack_ok)
+        if knapsack_ok:
+            knapsack_result = knapsack_value(in_knapsack)
+            print('Problem ' + str(problem_id) + ' knapsack loaded within capacity with value ' + str(knapsack_result))
+            print('  Execution time: %s seconds\n', str(execTime))      
         else:
-            print("knapcap: ", knapsack_ok)
-            print("knapsack value : ", knapsack_value(in_knapsack))
+            print('Problem ' + str(problem_id) + ' knapsack overloaded')
+    else:
+        print(status)
